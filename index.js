@@ -1,6 +1,7 @@
 var spawn = require('child_process').spawn;
 var concat = require('concat-stream');
 var xtend = require('xtend');
+var path = require('path');
 
 var reserved = {
   'SHLVL': true,
@@ -18,7 +19,11 @@ module.exports = function(filename, opts, cb) {
   }
 
   if (!opts.wrapper) {
-    opts.wrapper = __dirname + '/source.sh';
+    opts.wrapper = path.join(__dirname, 'source.sh');
+  }
+
+  if (!opts.shell) {
+    opts.shell = 'bash';
   }
 
   if (!opts.reserved) {
@@ -33,7 +38,7 @@ module.exports = function(filename, opts, cb) {
   var status = null;
   var stdout = null;
   var stderr = null;
-  var proc = spawn(opts.wrapper, [ filename ]);
+  var proc = spawn(opts.shell, [opts.wrapper, filename]);
   
   proc.on('error', function(err) {
     cb(err);
